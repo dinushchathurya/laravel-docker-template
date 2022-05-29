@@ -1,16 +1,16 @@
 version: "3.8"
-
 services:
 
-    ## Php Service
+    # PHP Service
     php:
-        build: .
-        target: Php
-        args: 
-            - APP_ENV = ${APP_ENV}
+        build:
+            context: .
+            target: php
+            args:
+                - APP_ENV=${APP_ENV}
         environment:
-            - APP_ENV = ${APP_ENV}
-            - CONTAINER_ROLE = app
+            - APP_ENV=${APP_ENV}
+            - CONTAINER_ROLE=app
         working_dir: /var/www
         volumes:
             - ./:/var/www
@@ -19,8 +19,8 @@ services:
         depends_on:
             - database
             - redis
-    
-    ## WebSocket Service
+
+    # WEb Socket Service
     websocket:
         build:
             context: .
@@ -39,41 +39,41 @@ services:
             - database
             - redis
 
-    ## Database Service
-    database: 
+    # Database Server
+    database:
         image: mysql:8.0
         ports:
-            - 3306:3306
+            -   3306:3306
         environment:
-            - MYSQL_DATABASE      = ${DB_DATABASE}
-            - MYSQL_USERANAME     = ${DB_USERNAME}
-            - MYSQL_PASSWORD      = ${DB_PASSWORD}
-            - MYSQL_ROOT_PASSWORD = ${DB_PASSWORD}
+            - MYSQL_DATABASE=${DB_DATABASE}
+            - MYSQL_USER=${DB_USERNAME}
+            - MYSQL_PASSWORD=${DB_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
         volumes:
             - db-data:/var/lib/mysql
 
-    ## Redis Service
+    # Redis Server
     redis:
         image: redis:alpine
-        command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+        command: redis-server --appendonly yes --requirepass  "${REDIS_PASSWORD}"
         ports:
             - 6379:6379
-    
-    ## Queue Service
+
+    # Queue Server
     queue:
         build:
             context: .
             target: php
             args:
-                - APP_ENV = ${APP_ENV}
+                - APP_ENV=${APP_ENV}
         environment:
-            - APP_ENV = ${APP_ENV}
-            - CONTAINER_ROLE = queue
+            - APP_ENV=${APP_ENV}
+            - CONTAINER_ROLE=queue
         working_dir: /var/www
         volumes:
             - ./:/var/www
-            
-    ## Node Service
+
+    # Node Server
     node:
         build:
             context: .
@@ -83,5 +83,5 @@ services:
             - ./node_modules:/usr/src/node_modules
         tty: true
 
-volumes: 
+volumes:
     db-data: ~
