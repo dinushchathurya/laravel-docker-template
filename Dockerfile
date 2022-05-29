@@ -1,6 +1,6 @@
 FROM php:8.1 as php
 
-RUN apt-get update
+RUN apt-get update -y
 
 RUN apt-get install -y unzip libpq-dev libcurl4-gnutls-dev
 
@@ -18,17 +18,16 @@ COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
 
 ENV PORT=8000
 
-ENTRYPOINT [ "sh", "docker/entrypoint.sh" ]
+ENTRYPOINT [ "docker/entrypoint.sh" ]
 
-#======================= NodeJS ========================#
-
+# ==============================================================================
 FROM node:14-alpine as node
 
 WORKDIR /var/www
 
 COPY . .
 
-RUN npm install --global cross-env.
+RUN npm install --global cross-env
 
 RUN npm install
 
