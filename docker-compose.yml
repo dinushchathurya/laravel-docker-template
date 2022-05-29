@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
 
     # PHP Service
@@ -13,7 +14,7 @@ services:
             - CONTAINER_ROLE=app
         working_dir: /var/www
         volumes:
-            - ./:/var/
+            - ./:/var/www
             - /var/www/vendor
         ports:
             - 8000:8000
@@ -21,7 +22,7 @@ services:
             - database
             - redis
 
-    # WEb Socket Service
+    # Web Socket Service
     websocket:
         build:
             context: .
@@ -46,10 +47,10 @@ services:
         ports:
             -   3306:3306
         environment:
-            - MYSQL_DATABASE=${DB_DATABASE}
-            - MYSQL_USER=${DB_USERNAME}
-            - MYSQL_PASSWORD=${DB_PASSWORD}
-            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+            - MYSQL_ALLOW_EMPTY_PASSWORD=1
+            - MYSQL_PASSWORD       = ${DB_PASSWORD}
+            - MYSQL_DATABASE       = ${DB_DATABASE}
+            - MYSQL_USER           = ${DB_USERNAME}
         volumes:
             - db-data:/var/lib/mysql
 
@@ -83,6 +84,19 @@ services:
             - .:/usr/src
             - ./node_modules:/usr/src/node_modules
         tty: true
+    
+    # PHP Myadmin
+    pma:
+        image: phpmyadmin:5.1
+        links:
+            - database
+        environment:
+            PMA_HOST: database
+        depends_on:
+            - databsae
+        ports:
+            - 8888:80
+        restart: always
 
 volumes:
     db-data: ~
